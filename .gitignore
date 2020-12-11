@@ -1,0 +1,6 @@
+# IDEA files #
+.idea/*
+
+# Downloaded OSRM data
+data/*
+!data/.gitkeep
