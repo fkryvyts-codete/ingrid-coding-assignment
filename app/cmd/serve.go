@@ -25,7 +25,7 @@ var serveCmd = &cobra.Command{
 		mux := http.NewServeMux()
 		routeshttp.RegisterHandlers(mux)
 
-		listenAndServe(withAccessControl(mux), logger)
+		listenAndServe(withHeaders(mux), logger)
 	},
 }
 
@@ -55,11 +55,12 @@ func listenAndServe(handler http.Handler, logger log.Logger) {
 	logger.Log("terminated", <-errs)
 }
 
-func withAccessControl(h http.Handler) http.Handler {
+func withHeaders(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 		if r.Method == "OPTIONS" {
 			return
