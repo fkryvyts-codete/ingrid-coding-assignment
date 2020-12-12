@@ -19,15 +19,6 @@ var (
 		Long: `A small web service that takes the source and a list of destinations
 and returns a list of routes between source and each destination.`,
 	}
-
-	serveCmd = &cobra.Command{
-		Use:   "serve",
-		Short: "Start the web service",
-		Long:  `You can change values in config.yaml to customize the behavior of the app`,
-		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("Listening on port " + viper.GetString("port") + " ...")
-		},
-	}
 )
 
 // Execute executes the root command.
