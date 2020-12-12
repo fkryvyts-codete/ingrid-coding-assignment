@@ -4,3 +4,6 @@
 # Downloaded OSRM data
 data/*
 !data/.gitkeep
+
+# Ignore compiled binaries
+app/ingrid-coding-assignment
