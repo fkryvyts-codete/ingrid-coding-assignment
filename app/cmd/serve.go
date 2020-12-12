@@ -9,9 +9,10 @@ import (
 	"syscall"
 
 	"github.com/go-kit/kit/log"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	routeshttp "github.com/fkryvyts-codete/ingrid-coding-assignment/pkg/routes/transport/http"
 )
 
 var serveCmd = &cobra.Command{
@@ -22,6 +23,7 @@ var serveCmd = &cobra.Command{
 		logger := newLogger()
 
 		mux := http.NewServeMux()
+		routeshttp.RegisterHandlers(mux)
 
 		listenAndServe(withAccessControl(mux), logger)
 	},
