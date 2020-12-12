@@ -19,32 +19,41 @@ var serveCmd = &cobra.Command{
 	Short: "Start the web service",
 	Long:  `You can change values in config.yaml to customize the behavior of the app`,
 	Run: func(_ *cobra.Command, _ []string) {
-		httpAddr := viper.GetString("server.listen")
-
-		var logger log.Logger
-		logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stderr))
-		logger = log.With(logger, "ts", log.DefaultTimestampUTC)
+		logger := newLogger()
 
 		mux := http.NewServeMux()
 
-		http.Handle("/", accessControl(mux))
-
-		errs := make(chan error, 2)
-		go func() {
-			logger.Log("transport", "http", "address", httpAddr, "msg", "listening")
-			errs <- http.ListenAndServe(httpAddr, nil)
-		}()
-		go func() {
-			c := make(chan os.Signal, 1)
-			signal.Notify(c, syscall.SIGINT)
-			errs <- fmt.Errorf("%s", <-c)
-		}()
-
-		logger.Log("terminated", <-errs)
+		listenAndServe(withAccessControl(mux), logger)
 	},
 }
 
-func accessControl(h http.Handler) http.Handler {
+func newLogger() log.Logger {
+	logger := log.NewLogfmtLogger(log.NewSyncWriter(os.Stderr))
+	return log.With(logger, "ts", log.DefaultTimestampUTC)
+}
+
+func listenAndServe(handler http.Handler, logger log.Logger) {
+	httpAddr := viper.GetString("server.listen")
+
+	http.Handle("/", handler)
+
+	errs := make(chan error, 2)
+
+	go func() {
+		logger.Log("transport", "http", "address", httpAddr, "msg", "listening")
+		errs <- http.ListenAndServe(httpAddr, nil)
+	}()
+
+	go func() {
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, syscall.SIGINT)
+		errs <- fmt.Errorf("%s", <-c)
+	}()
+
+	logger.Log("terminated", <-errs)
+}
+
+func withAccessControl(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
