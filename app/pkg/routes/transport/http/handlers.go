@@ -4,13 +4,14 @@ package http
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	nethttp "net/http"
 
 	"github.com/go-kit/kit/endpoint"
+	"github.com/go-kit/kit/log"
 	httptransport "github.com/go-kit/kit/transport/http"
 
 	"github.com/fkryvyts-codete/ingrid-coding-assignment/pkg/routes/entities"
+	"github.com/fkryvyts-codete/ingrid-coding-assignment/pkg/routes/service"
 )
 
 var (
@@ -30,9 +31,11 @@ type routesResponse struct {
 }
 
 // RegisterHandlers registers handlers for handling incoming requests
-func RegisterHandlers(mux *nethttp.ServeMux) {
+func RegisterHandlers(mux *nethttp.ServeMux, logger log.Logger) {
+	svc := service.NewService(logger)
+
 	routesHandler := httptransport.NewServer(
-		makeRoutesEndpoint(),
+		makeRoutesEndpoint(svc),
 		decodeRoutesRequest,
 		encodeRoutesResponse,
 	)
@@ -40,12 +43,21 @@ func RegisterHandlers(mux *nethttp.ServeMux) {
 	mux.Handle("/routes", routesHandler)
 }
 
-func makeRoutesEndpoint() endpoint.Endpoint {
+func makeRoutesEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(_ context.Context, req interface{}) (interface{}, error) {
-		fmt.Println(req)
+		request, ok := req.(*routesRequest)
+		if !ok {
+			return nil, newHTTPError("req is not routesRequest", 500)
+		}
 
-		return routesResponse{
-			Routes: []entities.Route{},
+		routes, err := svc.ListRoutes(request.src)
+		if err != nil {
+			return nil, newHTTPError(err.Error(), 500)
+		}
+
+		return &routesResponse{
+			Source: request.src,
+			Routes: routes,
 		}, nil
 	}
 }
@@ -72,7 +84,7 @@ func decodeRoutesRequest(_ context.Context, r *nethttp.Request) (interface{}, er
 		request.dst = append(request.dst, entities.LatLng(v))
 	}
 
-	return request, nil
+	return &request, nil
 }
 
 func encodeRoutesResponse(_ context.Context, w nethttp.ResponseWriter, response interface{}) error {

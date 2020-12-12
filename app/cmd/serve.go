@@ -23,14 +23,14 @@ var serveCmd = &cobra.Command{
 		logger := newLogger()
 
 		mux := http.NewServeMux()
-		routeshttp.RegisterHandlers(mux)
+		routeshttp.RegisterHandlers(mux, log.With(logger, "service", "routes"))
 
 		listenAndServe(withHeaders(mux), logger)
 	},
 }
 
 func newLogger() log.Logger {
-	logger := log.NewLogfmtLogger(log.NewSyncWriter(os.Stderr))
+	logger := log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout))
 	return log.With(logger, "ts", log.DefaultTimestampUTC)
 }
 

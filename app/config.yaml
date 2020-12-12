@@ -1,2 +1,6 @@
 server:
   listen: "0.0.0.0:8080"
+
+osrm:
+  # Can be changed to http://router.project-osrm.org when it is not down due to maintenance
+  url: "http://0.0.0.0:5000"
