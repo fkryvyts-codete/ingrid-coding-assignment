@@ -18,6 +18,15 @@ make docker-run
 
 ```
 
+Alternatively, you can skip building altogether and use the image directly from Docker Hub
+
+```bash
+
+docker run -it -p 8080:8080 fkryvyts/ingrid-coding-assignment
+
+```
+
+
 After that you can open the following URL in browser or fetch it by CURL to see that the app is working
 
 ``` bash
@@ -46,7 +55,7 @@ If it works you should see the following response
 
 ```
 
-Alternatively, you can build and run the app without using docker, natively. For this execute the following commands:
+If you do not have docker or do not want to use it, you can build and run the app without it, natively. For this execute the following commands:
 
 ```bash
 
@@ -127,6 +136,8 @@ The `app/pkg/routes/transport/http` directory contains code responsible for hand
 The `app/pkg/routes/entities` directory contains data structures that are not related to any particular transport but are required by business logic
 
 The `app/pkg/routes/service/service.go` file contains service business logic that is decoupled from any particular transport
+
+The `app/pkg/routes/service/service_test.go` file contains tests for service business logic
 
 The `app/pkg/routes/service/logging_middleware.go` file contains middleware that adds logging of requests/responses/errors to the service
 
