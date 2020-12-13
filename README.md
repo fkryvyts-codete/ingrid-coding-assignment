@@ -33,6 +33,12 @@ After that you can open the following URL in browser or fetch it by CURL to see 
 curl 'http://localhost:8080/routes?src=13.388860,52.517037&dst=13.397634,52.529407&dst=13.428555,52.523219'
 ```
 
+Also, you can just use the following link to call the app from `fkryvyts/ingrid-coding-assignment` Docker Hub image that was deployed to AWS Lightsail
+
+```bash
+curl 'https://ingrid-coding-assignment.svm6lr1mqd5fg.eu-central-1.cs.amazonlightsail.com/routes?src=13.388860,52.517037&dst=13.397634,52.529407&dst=13.428555,52.523219'
+```
+
 If it works you should see the following response
 
 ```json
