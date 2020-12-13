@@ -18,6 +18,7 @@ var (
 	errSrcIsMandatory    = newHTTPError("query parameter \"src\" is mandatory", 400)
 	errMultipleSrcValues = newHTTPError("multiple values for query parameter \"src\" are not supported", 400)
 	errDstIsMandatory    = newHTTPError("query parameter \"dst\" is mandatory", 400)
+	errInternal          = newHTTPError("internal server error", 500)
 )
 
 type routesRequest struct {
@@ -26,8 +27,8 @@ type routesRequest struct {
 }
 
 type routesResponse struct {
-	Source entities.LatLng  `json:"source"`
-	Routes []entities.Route `json:"routes"`
+	Source entities.LatLng   `json:"source"`
+	Routes []*entities.Route `json:"routes"`
 }
 
 // RegisterHandlers registers handlers for handling incoming requests
@@ -47,12 +48,12 @@ func makeRoutesEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(_ context.Context, req interface{}) (interface{}, error) {
 		request, ok := req.(*routesRequest)
 		if !ok {
-			return nil, newHTTPError("req is not routesRequest", 500)
+			return nil, errInternal
 		}
 
-		routes, err := svc.ListRoutes(request.src)
+		routes, err := svc.ListRoutes(request.src, request.dst)
 		if err != nil {
-			return nil, newHTTPError(err.Error(), 500)
+			return nil, errInternal
 		}
 
 		return &routesResponse{

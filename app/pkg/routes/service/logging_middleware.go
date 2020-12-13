@@ -12,13 +12,13 @@ type loggingMiddleware struct {
 	svc    Service
 }
 
-func (l *loggingMiddleware) ListRoutes(src entities.LatLng) ([]entities.Route, error) {
+func (l *loggingMiddleware) ListRoutes(src entities.LatLng, dst []entities.LatLng) ([]*entities.Route, error) {
 	l.logger.Log("ListRoutes", "begin", "src", src)
 	defer l.logger.Log("ListRoutes", "end")
 
-	r, err := l.svc.ListRoutes(src)
+	r, err := l.svc.ListRoutes(src, dst)
 	if err != nil {
-		l.logger.Log("Error occurred", err.Error())
+		l.logger.Log("Error", err.Error())
 	}
 
 	return r, err
