@@ -27,8 +27,8 @@ func NewClient() Client {
 
 // Response represents API response
 type Response struct {
-	Code   string  `json:"code"`
-	Routes []Route `json:"routes"`
+	Code   string   `json:"code"`
+	Routes []*Route `json:"routes"`
 }
 
 // Route represents route in API response

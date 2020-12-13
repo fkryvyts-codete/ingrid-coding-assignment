@@ -75,7 +75,11 @@ func (s *service) ListRoutes(src entities.LatLng, dst []entities.LatLng) ([]*ent
 		return result[i].Distance < result[j].Distance
 	})
 
-	return result, errs
+	if len(errs) > 0 {
+		return nil, errs
+	}
+
+	return result, nil
 }
 
 func (s *service) fetchRoute(src, dst entities.LatLng, c chan *fetchRouteResult, wg *sync.WaitGroup) {

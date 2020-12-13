@@ -57,6 +57,16 @@ make run
 
 ```
 
+## Testing
+
+In order to test the app run the following commands:
+
+```bash
+
+make test
+
+```
+
 ## Troubleshooting
 
 Very often [router.project-osrm.org](`http://router.project-osrm.org`) is down and not responding

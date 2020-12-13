@@ -4,6 +4,9 @@ osrm-dowload: ## Download data for local osrm instance
 osrm-launch: ## Run local osrm instance
 	cd ./data && ../scripts/osrm_launch.sh
 
+test: ## Run tests
+	cd ./app && go test -v ./.../service
+
 build: ## Rebuild the web service without using docker
 	cd ./app && go mod download && go build
 
