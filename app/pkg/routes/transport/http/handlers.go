@@ -17,7 +17,9 @@ import (
 var (
 	errSrcIsMandatory    = newHTTPError("query parameter \"src\" is mandatory", 400)
 	errMultipleSrcValues = newHTTPError("multiple values for query parameter \"src\" are not supported", 400)
+	errSrcIsNotValid     = newHTTPError("\"src\" is not a valid pair of latitude and longitude", 400)
 	errDstIsMandatory    = newHTTPError("query parameter \"dst\" is mandatory", 400)
+	errDstIsNotValid     = newHTTPError("\"dst\" is not a valid pair of latitude and longitude", 400)
 	errInternal          = newHTTPError("internal server error", 500)
 )
 
@@ -74,7 +76,12 @@ func decodeRoutesRequest(_ context.Context, r *nethttp.Request) (interface{}, er
 	case len(src) > 1:
 		return nil, errMultipleSrcValues
 	default:
-		request.src = entities.LatLng(src[0])
+		src := entities.LatLng(src[0])
+		if !src.Valid() {
+			return nil, errSrcIsNotValid
+		}
+
+		request.src = src
 	}
 
 	if _, ok := values["dst"]; !ok {
@@ -82,7 +89,12 @@ func decodeRoutesRequest(_ context.Context, r *nethttp.Request) (interface{}, er
 	}
 
 	for _, v := range values["dst"] {
-		request.dst = append(request.dst, entities.LatLng(v))
+		dst := entities.LatLng(v)
+		if !dst.Valid() {
+			return nil, errDstIsNotValid
+		}
+
+		request.dst = append(request.dst, dst)
 	}
 
 	return &request, nil
