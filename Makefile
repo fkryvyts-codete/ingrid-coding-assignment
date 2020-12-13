@@ -4,11 +4,16 @@ osrm-dowload: ## Download data for local osrm instance
 osrm-launch: ## Run local osrm instance
 	cd ./data && ../scripts/osrm_launch.sh
 
-build: ## Rebuild the web service
+build: ## Rebuild the web service without using docker
 	cd ./app && go mod download && go build
 
-run: ## Run the web service
+run: ## Run the web service without using docker
 	cd ./app && ./ingrid-coding-assignment serve
+
+build-docker: ## Rebuild the web service using docker
+	cd ./app && docker build -t ingrid-coding-assignment -f Dockerfile .
+run-docker: ## Run the web service using docker
+	docker run -it -p 8080:8080 ingrid-coding-assignment
 
 lint: ## Run linter for the code
 	cd ./app && golangci-lint run
