@@ -4,8 +4,11 @@ osrm-dowload: ## Download data for local osrm instance
 osrm-launch: ## Run local osrm instance
 	cd ./data && ../scripts/osrm_launch.sh
 
-run: ## Rebuild and run web service
-	cd ./app && go build && ./ingrid-coding-assignment serve
+build: ## Rebuild the web service
+	cd ./app && go mod download && go build
+
+run: ## Run the web service
+	cd ./app && ./ingrid-coding-assignment serve
 
 lint: ## Run linter for the code
 	cd ./app && golangci-lint run
