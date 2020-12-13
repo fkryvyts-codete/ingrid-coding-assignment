@@ -3,6 +3,7 @@ package service
 
 import (
 	"errors"
+	"sort"
 	"sync"
 
 	"github.com/go-kit/kit/log"
@@ -13,7 +14,7 @@ import (
 
 // Service represents application service
 type Service interface {
-	ListRoutes(src entities.LatLng, dst []entities.LatLng) ([]*entities.Route, error)
+	ListRoutes(src entities.LatLng, dst []entities.LatLng) ([]*entities.Route, []error)
 }
 
 // NewService creates new service instance
@@ -35,8 +36,11 @@ type fetchRouteResult struct {
 	route *entities.Route
 }
 
-func (s *service) ListRoutes(src entities.LatLng, dst []entities.LatLng) ([]*entities.Route, error) {
-	var result []*entities.Route
+func (s *service) ListRoutes(src entities.LatLng, dst []entities.LatLng) ([]*entities.Route, []error) {
+	var (
+		result []*entities.Route
+		errs   []error
+	)
 
 	var wg sync.WaitGroup
 
@@ -56,10 +60,22 @@ func (s *service) ListRoutes(src entities.LatLng, dst []entities.LatLng) ([]*ent
 	for r := range c {
 		if r.err == nil {
 			result = append(result, r.route)
+		} else {
+			errs = append(errs, r.err)
 		}
 	}
 
-	return result, nil
+	sort.Slice(result, func(i, j int) bool {
+		if result[i].Duration < result[j].Duration {
+			return true
+		}
+		if result[i].Duration > result[j].Duration {
+			return false
+		}
+		return result[i].Distance < result[j].Distance
+	})
+
+	return result, errs
 }
 
 func (s *service) fetchRoute(src, dst entities.LatLng, c chan *fetchRouteResult, wg *sync.WaitGroup) {

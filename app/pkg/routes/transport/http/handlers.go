@@ -51,8 +51,8 @@ func makeRoutesEndpoint(svc service.Service) endpoint.Endpoint {
 			return nil, errInternal
 		}
 
-		routes, err := svc.ListRoutes(request.src, request.dst)
-		if err != nil {
+		routes, errs := svc.ListRoutes(request.src, request.dst)
+		if len(errs) > 0 {
 			return nil, errInternal
 		}
 
