@@ -47,14 +47,14 @@ If it works you should see the following response
   "source": "13.388860,52.517037",
   "routes": [
     {
-      "Destination": "13.397634,52.529407",
-      "Duration": 251.5,
-      "Distance": 1884.8
+      "destination": "13.397634,52.529407",
+      "duration": 251.5,
+      "distance": 1884.8
     },
     {
-      "Destination": "13.428555,52.523219",
-      "Duration": 394.2,
-      "Distance": 3841.7
+      "destination": "13.428555,52.523219",
+      "duration": 394.2,
+      "distance": 3841.7
     }
   ]
 }

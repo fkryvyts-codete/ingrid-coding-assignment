@@ -29,8 +29,14 @@ type routesRequest struct {
 }
 
 type routesResponse struct {
-	Source entities.LatLng   `json:"source"`
-	Routes []*entities.Route `json:"routes"`
+	Source entities.LatLng        `json:"source"`
+	Routes []*routesResponseRoute `json:"routes"`
+}
+
+type routesResponseRoute struct {
+	Destination entities.LatLng `json:"destination"`
+	Duration    float32         `json:"duration"`
+	Distance    float32         `json:"distance"`
 }
 
 // RegisterHandlers registers handlers for handling incoming requests
@@ -53,9 +59,19 @@ func makeRoutesEndpoint(svc service.Service) endpoint.Endpoint {
 			return nil, errInternal
 		}
 
-		routes, errs := svc.ListRoutes(request.src, request.dst)
+		rr, errs := svc.ListRoutes(request.src, request.dst)
 		if len(errs) > 0 {
 			return nil, errInternal
+		}
+
+		var routes []*routesResponseRoute
+
+		for _, r := range rr {
+			routes = append(routes, &routesResponseRoute{
+				Destination: r.Destination,
+				Duration:    r.Duration,
+				Distance:    r.Distance,
+			})
 		}
 
 		return &routesResponse{
