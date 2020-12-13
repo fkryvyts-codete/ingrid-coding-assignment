@@ -17,6 +17,10 @@ build-docker: ## Rebuild the web service using docker
 	cd ./app && docker build -t ingrid-coding-assignment -f Dockerfile .
 run-docker: ## Run the web service using docker
 	docker run -it -p 8080:8080 ingrid-coding-assignment
+push-docker: ## Push built docker image to Docker Hub
+	docker tag ingrid-coding-assignment fkryvyts/ingrid-coding-assignment
+	docker login
+	docker push fkryvyts/ingrid-coding-assignment
 
 lint: ## Run linter for the code
 	cd ./app && golangci-lint run
